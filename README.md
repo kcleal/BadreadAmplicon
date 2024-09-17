@@ -1,4 +1,3 @@
-
 BadreadAmplicon
 ===============
 
@@ -9,6 +8,72 @@ The only difference is that the ``--reference`` argument now refers to a fasta f
 reads the entire length of the amplicon are simulated, rather than generating partial sequences.
 
 All other input arguments are the same as for Badread.
+
+## Usage
+### Generate amplicons
+```bash
+python generate_fusions.py ref_genome primers_with_target.fa num > amplicons.fa
+```
+
+- **ref_genome**: path to the reference genome
+- **primers_with_target.fa**: fasta file of telomere ends
+- **num**: number of unique events
+
+Options:
+- ``--mu-ins``: insertion number mean (poisson distribution)
+- ``--mean-block-len``: insertion length mean (gamma distribution)
+- ``--std-block-len``: insertion length stdev (gamma distribution)
+
+
+### Simulate reads
+This is an example for Oxford Nanopore R10.4.1 reads of mediocre quality.
+```bash
+badread simulate --reference amplicons.fa --quantity 50x > simulated_fusions.fq
+```
+
+Simulate reads with varying depth:
+===============
+
+The following scripts can simulate amplicon data with varying depth parameters to model Fusion seq reads 
+and aid the testing of split-read aligners:
+- **generate_fusions2.py**: Creates fasta files of complex fusion amplicons.
+- **simulate_reads.py**: Using the amplicon fasta files simulates Nanopore long-read sequencing runs with different depth
+parameters. Aims to mimic the amplification observed in real Fusion seq data, it uses
+badread for the simulation.
+
+
+## Usage
+### Generate amplicons
+```bash
+python generate_fusions2.py ref_genome primers_with_target.fa num out_folder
+```
+
+- **ref_genome**: path to the reference genome
+- **primers_with_target.fa**: fasta file of telomere ends
+- **num**: number of unique events
+- **out_folder**: path to output folder
+
+Options:
+- ``--mu-ins``: insertion number mean (poisson distribution)
+- ``--mean-block-len``: insertion length mean (gamma distribution)
+- ``--std-block-len``: insertion length stdev (gamma distribution)
+- ``--n-reads-mean``: mean number of reads in a cluster (depth)
+- ``--n-reads-std``: standard deviation of the number of reads in a cluster
+- ``--add-diff-primers``: create reads with different primers on each end
+- ``--diff-primer-fraction``: fraction of reads with diff primers
+- ``--add-false-tag``: create reads with one primer missing
+- ``--false-tag-fraction``: fraction of reads with one primer missing
+
+### Simulate long-read sequencing
+```bash
+python3 simulate_reads.py --reference fusions_folder --out out_folder --threads 6
+```
+Arguments:
+- ``--reference``: path to the folder containing generated fusions
+- ``--out``: path to the output folder
+- ``--threads``: number of cores
+
+
 
 Documentation for Badread:
 --------------------------
